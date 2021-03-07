@@ -9,7 +9,8 @@ export default new Vuex.Store({
     list: [],
     inputValue: 'aaa',
     // 下一个id
-    nextId: 5
+    nextId: 5,
+    viewKey: 'all'
   },
   mutations: {
     initList (state, list) {
@@ -30,11 +31,26 @@ export default new Vuex.Store({
       state.nextId++
       state.inputValue = ''
     },
+    // 根据索引删除对应的任务
     removeItem (state, id) {
       const i = state.list.findIndex(x => x.id === id)
       if (i !== -1) {
         state.list.splice(i, 1)
       }
+    },
+    // 修改列表项的选中状态
+    changeStatus (state, param) {
+      const i = state.list.findIndex(x => x.id === param.id)
+      if (i !== -1) {
+        state.list[i].done = param.status
+      }
+    },
+    // 清除已完成的任务
+    cleanDone (state) {
+      state.list = state.list.filter(x => x.done === false)
+    },
+    changeViewKey (state, key) {
+      state.viewKey = key
     }
   },
   actions: {
@@ -42,6 +58,26 @@ export default new Vuex.Store({
       const { data: res } = await axios.get('/list')
       var result = res.data
       context.commit('initList', result)
+    }
+  },
+  getters: {
+    unDoneLength (state) {
+      return state.list.filter(x => x.done === false).length
+    },
+    infolist (state) {
+      if (state.viewKey === 'all') {
+        return state.list
+      }
+
+      if (state.viewKey === 'undone') {
+        return state.list.filter(x => !x.done)
+      }
+
+      if (state.viewKey === 'done') {
+        return state.list.filter(x => x.done)
+      }
+
+      return state.list
     }
   },
   modules: {}

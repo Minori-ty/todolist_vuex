@@ -8,10 +8,18 @@
     />
     <a-button type="primary" @click="addItemToList">添加事项</a-button>
 
-    <a-list bordered :dataSource="list" class="dt_list">
+    <a-list bordered :dataSource="infolist" class="dt_list">
       <a-list-item slot="renderItem" slot-scope="item">
         <!-- 复选框 -->
-        <a-checkbox :checked="item.done">{{ item.info }}</a-checkbox>
+        <a-checkbox
+          :checked="item.done"
+          @change="
+            e => {
+              cbStatusChanged(e, item.id)
+            }
+          "
+          >{{ item.info }}</a-checkbox
+        >
         <!-- 删除链接 -->
         <a slot="actions" @click="removeItemById(item.id)">删除</a>
       </a-list-item>
@@ -19,22 +27,34 @@
       <!-- footer区域 -->
       <div slot="footer" class="footer">
         <!-- 未完成的任务个数 -->
-        <span>0条剩余</span>
+        <span>{{ unDoneLength }}条剩余</span>
         <!-- 操作按钮 -->
         <a-button-group>
-          <a-button type="primary">全部</a-button>
-          <a-button>未完成</a-button>
-          <a-button>已完成</a-button>
+          <a-button
+            :type="viewKey === 'all' ? 'primary' : 'default'"
+            @click="changeList('all')"
+            >全部</a-button
+          >
+          <a-button
+            :type="viewKey === 'undone' ? 'primary' : 'default'"
+            @click="changeList('undone')"
+            >未完成</a-button
+          >
+          <a-button
+            :type="viewKey === 'done' ? 'primary' : 'default'"
+            @click="changeList('done')"
+            >已完成</a-button
+          >
         </a-button-group>
         <!-- 把已经完成的任务清空 -->
-        <a>清除已完成</a>
+        <a @click="clean">清除已完成</a>
       </div>
     </a-list>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'app',
@@ -62,10 +82,26 @@ export default {
     // 根据id删除对应的任务事项
     removeItemById (id) {
       this.$store.commit('removeItem', id)
+    },
+    cbStatusChanged (e, id) {
+      const param = {
+        id: id,
+        status: e.target.checked
+      }
+      this.$store.commit('changeStatus', param)
+    },
+    // 清除已完成的任务
+    clean () {
+      this.$store.commit('cleanDone')
+    },
+    changeList (key) {
+      // console.log(key)
+      this.$store.commit('changeViewKey', key)
     }
   },
   computed: {
-    ...mapState(['list', 'inputValue'])
+    ...mapState(['inputValue', 'viewKey']),
+    ...mapGetters(['unDoneLength', 'infolist'])
   }
 }
 </script>
