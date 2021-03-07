@@ -6,14 +6,14 @@
       :value="inputValue"
       @change="handleInputChange"
     />
-    <a-button type="primary">添加事项</a-button>
+    <a-button type="primary" @click="addItemToList">添加事项</a-button>
 
     <a-list bordered :dataSource="list" class="dt_list">
       <a-list-item slot="renderItem" slot-scope="item">
         <!-- 复选框 -->
-        <a-checkbox>{{ item.info }}</a-checkbox>
+        <a-checkbox :checked="item.done">{{ item.info }}</a-checkbox>
         <!-- 删除链接 -->
-        <a slot="actions">删除</a>
+        <a slot="actions" @click="removeItemById(item.id)">删除</a>
       </a-list-item>
 
       <!-- footer区域 -->
@@ -50,6 +50,18 @@ export default {
     // 监听文本框内容变化
     handleInputChange (e) {
       this.$store.commit('setInputValue', e.target.value)
+    },
+    // 向列表中新增item项
+    addItemToList () {
+      if (this.inputValue.trim().length <= 0) {
+        return this.$message.warning('文本框内容不能为空！')
+      }
+
+      this.$store.commit('addItem')
+    },
+    // 根据id删除对应的任务事项
+    removeItemById (id) {
+      this.$store.commit('removeItem', id)
     }
   },
   computed: {

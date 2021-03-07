@@ -1,6 +1,6 @@
 import Mock from 'mockjs'
 Mock.mock('/list', 'get', {
-  'data|10': [
+  'data|5': [
     {
       'id|+1': 0,
       info: '@cparagraph(1,2)',

@@ -7,14 +7,34 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     list: [],
-    inputValue: 'aaa'
+    inputValue: 'aaa',
+    // 下一个id
+    nextId: 5
   },
   mutations: {
     initList (state, list) {
       state.list = list
     },
+    // 为inputValue赋值
     setInputValue (state, val) {
       state.inputValue = val
+    },
+    // 添加列表项
+    addItem (state) {
+      const obj = {
+        id: state.nextId,
+        info: state.inputValue.trim(),
+        done: false
+      }
+      state.list.push(obj)
+      state.nextId++
+      state.inputValue = ''
+    },
+    removeItem (state, id) {
+      const i = state.list.findIndex(x => x.id === id)
+      if (i !== -1) {
+        state.list.splice(i, 1)
+      }
     }
   },
   actions: {
