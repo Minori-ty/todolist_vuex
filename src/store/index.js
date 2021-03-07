@@ -7,7 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     list: [],
-    inputValue: 'aaa',
+    inputValue: '',
     // 下一个id
     nextId: 5,
     viewKey: 'all'
